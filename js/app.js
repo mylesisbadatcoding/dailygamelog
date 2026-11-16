@@ -140,7 +140,7 @@
 
   /* ---------- login ---------- */
   function initLogin() {
-    $('#crew-row').hidden = !Store.remote;
+    
     const box = $('#profiles');
     const profs = Store.localProfiles();
     if (profs.length) {
