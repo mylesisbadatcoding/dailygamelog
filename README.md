@@ -95,3 +95,5 @@ firebase-rules.json database rules to paste
 - Dates are your local date. Use the date picker to log a missed day.
 - Pasting the same game twice on the same date replaces your earlier score.
 - Back up with **DATA → EXPORT JSON**.
+
+- https://htmlpreview.github.io/? - you use this to see a html preview
