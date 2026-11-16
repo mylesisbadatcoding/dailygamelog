@@ -1,8 +1,6 @@
-# PIXEL RANK
-## games to add
-- https://catfishing.net/
+# rank2.day
 
-An 8-bit daily game leaderboard. Paste the "share" text from Wordle, Krillion, Costcodle and friends; it figures out the game and score, ranks everyone, and keeps a history.
+A dark, retro-future daily game leaderboard. Paste the "share" text from Wordle, Krillion, Costcodle and friends; it figures out the game and score, ranks everyone, and keeps a history.
 
 Pure static site (HTML/CSS/JS, no build step), so it hosts free on GitHub Pages.
 
@@ -51,6 +49,7 @@ Per game, per day, players are ranked (ties share a rank). With 2+ players on a 
 | NYT Mini | time | lowest |
 | Daily Red / Blue / Lance | lives left, then fewer turns | highest |
 | Connections | mistakes (fail = 5) | lowest |
+| Strands | hints used (💡 count) | lowest |
 | Quordle | total guesses | lowest |
 | Anything like `Name 123 4/6` | tries | lowest |
 
@@ -85,7 +84,7 @@ js/games.js         per-game rules and display
 js/links.js         game directory for the drawer
 js/storage.js       localStorage + Firebase sync
 js/app.js           UI and leaderboard logic
-assets/             logo, favicon, low-poly header
+assets/             logo and favicon
 tests/              parser tests (npm test)
 firebase-rules.json database rules to paste
 ```
@@ -95,5 +94,3 @@ firebase-rules.json database rules to paste
 - Dates are your local date. Use the date picker to log a missed day.
 - Pasting the same game twice on the same date replaces your earlier score.
 - Back up with **DATA → EXPORT JSON**.
-
-- https://htmlpreview.github.io/? - you use this to see a html preview

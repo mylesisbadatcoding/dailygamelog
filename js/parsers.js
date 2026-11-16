@@ -1,5 +1,5 @@
 /*
- * PIXEL RANK - share-text parsers
+ * rank2.day - share-text parsers
  *
  * parseAll(text) accepts ANY pasted blob (one game or many) and returns an
  * array of results:
@@ -54,23 +54,6 @@
         };
       },
     },
-
-  // Strands #988 \n "Theme" \n 🔵💡🔵🟡 ...   (score = number of 💡 hints, lower wins)
-      {
-        name: 'strands',
-        re: /Strands\s+#(\d+)/gi,
-        parse: (b, m) => {
-          const hints = (b.match(/\u{1F4A1}/gu) || []).length;
-          return {
-            game: 'strands',
-            puzzle: Number(m[1]),
-            score: hints,
-            display: hints === 0 ? 'No hints' : hints + (hints === 1 ? ' hint' : ' hints'),
-          };
-        },
-      },
-
-
 
     // Costcodle Checkout #6  (score = total dollars "off" - lower is better)
     {
@@ -199,6 +182,21 @@
           score: total,
           display: total + ' guesses' + (reds ? ' (' + reds + ' missed)' : ''),
           fail: reds > 0,
+        };
+      },
+    },
+
+    // Strands #988 \n "Theme" \n 🔵💡🔵🟡 ...   (score = number of 💡 hints, lower wins)
+    {
+      name: 'strands',
+      re: /Strands\s+#(\d+)/gi,
+      parse: (b, m) => {
+        const hints = (b.match(/\u{1F4A1}/gu) || []).length;
+        return {
+          game: 'strands',
+          puzzle: Number(m[1]),
+          score: hints,
+          display: hints === 0 ? 'No hints' : hints + (hints === 1 ? ' hint' : ' hints'),
         };
       },
     },

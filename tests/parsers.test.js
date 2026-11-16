@@ -33,6 +33,11 @@ assert.strictEqual(conn.score, 1);
 const nerdle = parseAll('Nerdle 812 4/6\n⬛⬛')[0];
 assert.strictEqual(nerdle.game, 'nerdle');
 assert.strictEqual(nerdle.score, 4);
+const str = parseAll('Strands #988\n\u201cWhat\'s the big idea?\u201d\n🔵💡🔵🟡\n🔵🔵🔵🔵')[0];
+assert.strictEqual(str.game, 'strands');
+assert.strictEqual(str.puzzle, 988);
+assert.strictEqual(str.score, 1);
+assert.strictEqual(parseAll('Strands #1\n🔵🔵🔵')[0].score, 0);
 assert.strictEqual(parseAll('hello world').length, 0);
 
 console.log('OK - ' + res.length + ' results parsed from sample');

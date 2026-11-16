@@ -1,4 +1,4 @@
-/* PIXEL RANK - app logic (no build step, no dependencies) */
+/* rank2.day - app logic (no build step, no dependencies) */
 (function () {
   'use strict';
 
@@ -9,7 +9,7 @@
   const POINTS = cfg.points || [3, 2, 1];
   const SESSION = 'pixelrank.session';
   const MEDALS = ['🥇', '🥈', '🥉'];
-  const PALETTE = ['#c98a8a', '#8fae8b', '#7a95b5', '#d4b86a', '#a58bb5', '#d19a6a', '#79aeb0', '#b0a38a'];
+  const PALETTE = ['#c8665e', '#6fa583', '#6a8fc4', '#cdb765', '#9a82b8', '#cf9a5a', '#6fa9ad', '#a39e92'];
 
   const esc = (s) =>
     String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -382,7 +382,7 @@
     const W = canvas.width, H = canvas.height;
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = '#1e2029'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#0d0e11'; ctx.fillRect(0, 0, W, H);
     const pl = 26, pr = 8, pt = 8, pb = 8;
     const iw = W - pl - pr, ih = H - pt - pb;
     const max = Math.max(4, ...users.map((uk) => Math.max(...tl.series[uk])));
@@ -390,12 +390,12 @@
     const X = (i) => Math.round(n < 2 ? pl + iw / 2 : pl + (i * iw) / (n - 1));
     const Y = (v) => Math.round(pt + ih - (v / max) * ih);
 
-    ctx.fillStyle = '#3a3e52';
+    ctx.fillStyle = '#2a2e37';
     for (let g = 0; g <= 4; g++) {
       const y = Math.round(pt + (ih * g) / 4);
       for (let x = pl; x < W - pr; x += 4) ctx.fillRect(x, y, 2, 1); // dotted grid
     }
-    ctx.fillStyle = '#9a9a98';
+    ctx.fillStyle = '#7d8290';
     ctx.font = '8px monospace';
     ctx.fillText(String(max), 1, pt + 3);
     ctx.fillText('0', 1, pt + ih + 3);
@@ -459,7 +459,7 @@
     const blob = new Blob([JSON.stringify({ app: 'pixel-rank', group: state.group, exported: new Date().toISOString(), users: state.db.users }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `pixel-rank-${state.group}-${today()}.json`;
+    a.download = `rank2-day-${state.group}-${today()}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
@@ -483,7 +483,7 @@
       renderAll();
       toast(`Imported ${added} scores`);
     } catch (e) {
-      toast('Import failed: not a valid Pixel Rank file');
+      toast('Import failed: not a valid rank2.day file');
     }
     ev.target.value = '';
   }
