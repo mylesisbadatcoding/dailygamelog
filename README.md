@@ -1,4 +1,6 @@
 # PIXEL RANK
+## games to add
+- https://catfishing.net/
 
 An 8-bit daily game leaderboard. Paste the "share" text from Wordle, Krillion, Costcodle and friends; it figures out the game and score, ranks everyone, and keeps a history.
 
