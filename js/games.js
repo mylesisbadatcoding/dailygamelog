@@ -19,6 +19,7 @@
     'daily-lance': { name: 'Daily Lance',     icon: '🟪', higher: true,                url: 'https://daily-red.com/lance' },
     connections:   { name: 'Connections',     icon: '🔗', higher: false,               url: 'https://www.nytimes.com/games/connections' },
     quordle:       { name: 'Quordle',         icon: '4️⃣', higher: false,               url: 'https://www.merriam-webster.com/games/quordle' },
+    strands:       { name: 'Strands',         icon: '💡', higher: false,               url: 'https://www.nytimes.com/games/strands' },
   };
 
   function meta(id, entry) {
