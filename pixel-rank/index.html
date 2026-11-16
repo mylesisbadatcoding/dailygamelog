@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PIXEL RANK - Daily Game Leaderboard</title>
+  <meta name="description" content="Paste your daily game results and compete on a shared leaderboard.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="scan" aria-hidden="true"></div>
+
+  <!-- LOGIN -->
+  <section id="login-screen" class="screen">
+    <div class="panel login">
+      <img class="logo big" src="assets/logo.svg" alt="" width="64" height="64">
+      <h1>PIXEL RANK</h1>
+      <p class="sub">Daily game scores. One leaderboard.</p>
+      <form id="login-form" autocomplete="off">
+        <label class="label" for="in-name">USERNAME</label>
+        <input id="in-name" type="text" maxlength="20" placeholder="e.g. myles" required autofocus>
+        <div id="crew-row" hidden>
+          <label class="label" for="in-crew">CREW CODE</label>
+          <input id="in-crew" type="text" maxlength="32" placeholder="friends share the same code">
+        </div>
+        <p class="hint">New name = new save file. No password.</p>
+        <button class="btn" type="submit">START ▶</button>
+        <p id="login-err" class="err" role="alert"></p>
+      </form>
+      <div id="profiles"></div>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="brand">
+        <img class="logo" src="assets/logo.svg" alt="" width="36" height="36">
+        <h1>PIXEL RANK</h1>
+      </div>
+      <nav class="datenav" aria-label="Date">
+        <button class="btn small" id="btn-prev" title="Previous day">◀</button>
+        <input type="date" id="date-input" aria-label="Date">
+        <button class="btn small" id="btn-next" title="Next day">▶</button>
+        <button class="btn small ghost" id="btn-today">TODAY</button>
+      </nav>
+      <div class="userbar">
+        <span id="sync" class="pill">LOCAL ONLY</span>
+        <button class="btn small gold" id="btn-games">🎮 GAMES</button>
+        <span class="chip"><span id="who"></span><small id="crew-tag"></small></span>
+        <button class="btn small ghost" id="btn-crt" title="Toggle scanlines">CRT</button>
+        <button class="btn small ghost" id="btn-logout">LOG OUT</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel" id="panel-today">
+        <h2 id="today-title">TODAY'S BOARD</h2>
+        <div id="today-board"></div>
+        <div id="today-games" class="gcards"></div>
+      </section>
+
+      <section class="panel paste" id="panel-paste">
+        <h2><span class="blink">▼</span> PASTE YOUR RESULTS <span class="blink">▼</span></h2>
+        <p class="logging">Logging for: <b id="log-date"></b></p>
+        <label class="sr" for="paste">Paste share text</label>
+        <textarea id="paste" rows="9" spellcheck="false" placeholder="Paste Wordle, Connections, Krillion, Costcodle... one game or a whole pile at once."></textarea>
+        <div class="btnrow">
+          <button class="btn" id="btn-save" disabled>SAVE SCORES</button>
+          <button class="btn small ghost" id="btn-clip">📋 PASTE</button>
+          <button class="btn small ghost" id="btn-clear">CLEAR</button>
+        </div>
+        <div id="preview" aria-live="polite"></div>
+      </section>
+
+      <section class="panel wide" id="panel-archive">
+        <div class="tabs" role="tablist">
+          <button class="tab on" data-tab="alltime" role="tab">ALL-TIME</button>
+          <button class="tab" data-tab="history" role="tab">HISTORY</button>
+          <button class="tab" data-tab="trends" role="tab">TRENDS</button>
+          <button class="tab" data-tab="games" role="tab">BY GAME</button>
+          <button class="tab" data-tab="data" role="tab">DATA</button>
+        </div>
+        <div id="tab-body"></div>
+      </section>
+    </main>
+
+    <footer class="foot">PIXEL RANK · 8-bit scores for real friends</footer>
+  </div>
+
+  <!-- GAMES DRAWER -->
+  <div id="backdrop"></div>
+  <aside id="drawer" aria-hidden="true" aria-label="Daily game links">
+    <div class="dhead">
+      <h2>DAILY GAMES</h2>
+      <button class="btn small ghost" id="drawer-close" aria-label="Close">✕</button>
+    </div>
+    <input id="link-filter" type="search" placeholder="filter games…" aria-label="Filter games">
+    <div id="link-list"></div>
+  </aside>
+
+  <div id="toast" role="status"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/parsers.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/links.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
