@@ -3,20 +3,23 @@
  * Add or remove entries freely. Sites move around, so if a link dies, fix it here.
  */
 window.GAME_LINKS = [
-  { cat: 'Your crew', items: [
+  { cat: 'Confirmed Working', items: [
     { name: 'Krillion',        url: 'https://krillion.io',                                   note: 'Rare answers sink deeper' },
-    { name: 'Noillirk',        url: 'https://playdaily.org/noillirk',                        note: 'Common answers climb' },
     { name: 'Scale of Things', url: 'https://playdaily.org/size-it-up',                      note: 'Size It Up' },
     { name: 'Costcodle',       url: 'https://www.costcodle.com',                             note: 'Guess Costco prices' },
+    { name: 'Wordle',          url: 'https://www.nytimes.com/games/wordle/index.html',       note: '6 tries' },
+    { name: 'Strands',         url: 'https://www.nytimes.com/games/strands',                 note: 'Themed word search' },
+    
+  ]},
+    { cat: 'Other', items: [
+    { name: 'Noillirk',        url: 'https://playdaily.org/noillirk',                        note: 'Common answers climb' },
     { name: 'Daily Red',       url: 'https://daily-red.com',                                 note: 'Beat Red' },
     { name: 'Daily Blue',      url: 'https://daily-red.com/blue',                            note: 'Beat Blue' },
     { name: 'Daily Lance',     url: 'https://daily-red.com/lance',                           note: 'Beat Lance' },
     { name: 'PlayDaily hub',   url: 'https://playdaily.org',                                 note: 'Lots more games' },
   ]},
   { cat: 'NYT Games', items: [
-    { name: 'Wordle',          url: 'https://www.nytimes.com/games/wordle/index.html',       note: '6 tries' },
     { name: 'Connections',     url: 'https://www.nytimes.com/games/connections',             note: 'Group 16 words' },
-    { name: 'Strands',         url: 'https://www.nytimes.com/games/strands',                 note: 'Themed word search' },
     { name: 'The Mini',        url: 'https://www.nytimes.com/crosswords/game/mini',          note: 'Mini crossword' },
     { name: 'Spelling Bee',    url: 'https://www.nytimes.com/puzzles/spelling-bee',          note: '7 letters' },
     { name: 'Letter Boxed',    url: 'https://www.nytimes.com/puzzles/letter-boxed',          note: 'Chain words' },
