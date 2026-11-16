@@ -23,9 +23,10 @@
       <form id="login-form" autocomplete="off">
         <label class="label" for="in-name">USERNAME</label>
         <input id="in-name" type="text" maxlength="20" placeholder="e.g. myles" required autofocus>
-        <div id="crew-row" hidden>
+        <div id="crew-row">
           <label class="label" for="in-crew">CREW CODE</label>
-          <input id="in-crew" type="text" maxlength="32" placeholder="friends share the same code">
+          <input id="in-crew" type="text" maxlength="32" value="all" placeholder="all">
+          <p class="hint">New here? Leave this as "all" for now.</p>
         </div>
         <p class="hint">New name = new save file. No password.</p>
         <button class="btn" type="submit">START ▶</button>
