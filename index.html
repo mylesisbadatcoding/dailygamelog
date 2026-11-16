@@ -58,7 +58,16 @@
       </div>
     </header>
 
-    <main class="grid">
+    <nav class="tabbar" role="tablist" aria-label="Views">
+      <button class="tab on" data-tab="today" role="tab">TODAY</button>
+      <button class="tab" data-tab="alltime" role="tab">ALL-TIME</button>
+      <button class="tab" data-tab="history" role="tab">HISTORY</button>
+      <button class="tab" data-tab="trends" role="tab">TRENDS</button>
+      <button class="tab" data-tab="games" role="tab">BY GAME</button>
+      <button class="tab" data-tab="data" role="tab">DATA</button>
+    </nav>
+
+    <main class="grid" id="view-today">
       <section class="panel" id="panel-today">
         <h2 id="today-title">TODAY'S BOARD</h2>
         <div id="today-board"></div>
@@ -78,17 +87,14 @@
         <div id="preview" aria-live="polite"></div>
       </section>
 
-      <section class="panel wide" id="panel-archive">
-        <div class="tabs" role="tablist">
-          <button class="tab on" data-tab="alltime" role="tab">ALL-TIME</button>
-          <button class="tab" data-tab="history" role="tab">HISTORY</button>
-          <button class="tab" data-tab="trends" role="tab">TRENDS</button>
-          <button class="tab" data-tab="games" role="tab">BY GAME</button>
-          <button class="tab" data-tab="data" role="tab">DATA</button>
-        </div>
-        <div id="tab-body"></div>
-      </section>
     </main>
+
+    <section class="archive" id="view-archive" hidden>
+      <div class="panel">
+        <h2 id="archive-title"></h2>
+        <div id="tab-body"></div>
+      </div>
+    </section>
 
     <footer class="foot">PIXEL RANK · 8-bit scores for real friends</footer>
   </div>
