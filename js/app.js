@@ -27,7 +27,7 @@
     db: { users: {} },
     online: false,
     date: today(),
-    tab: 'alltime',
+    tab: 'today',
     parsed: [],
   };
 
@@ -140,7 +140,6 @@
 
   /* ---------- login ---------- */
   function initLogin() {
-    
     const box = $('#profiles');
     const profs = Store.localProfiles();
     if (profs.length) {
@@ -334,8 +333,14 @@
   /* ---------- tabs ---------- */
   function renderTab() {
     $$('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === state.tab));
-    const body = $('#tab-body');
+    const isToday = state.tab === 'today';
+    $('#view-today').hidden = !isToday;
+    $('#view-archive').hidden = isToday;
+    if (isToday) return;
+    const titles = { alltime: 'ALL-TIME STANDINGS', history: 'HISTORY', trends: 'TRENDS', games: 'BY GAME', data: 'DATA' };
     const fn = { alltime: tabAllTime, history: tabHistory, trends: tabTrends, games: tabGames, data: tabData }[state.tab];
+    $('#archive-title').textContent = titles[state.tab];
+    const body = $('#tab-body');
     body.innerHTML = '';
     fn(body);
   }
@@ -542,7 +547,7 @@
       const del = e.target.closest('[data-del]');
       if (del) deleteEntry(del.dataset.del);
       const go = e.target.closest('[data-goto]');
-      if (go) { setDate(go.dataset.goto); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      if (go) { state.tab = 'today'; setDate(go.dataset.goto); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });
     document.addEventListener('visibilitychange', () => { if (!document.hidden && state.user && Store.remote) refresh(); });
 
