@@ -8,4 +8,6 @@
 - Have ben and Andy test
 - Add nyt strands (lowest hints wins)
 
-
+11/16/26 lunch
+- domain namees: rank2.day
+- make a new branch and try overhauling the site
