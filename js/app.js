@@ -251,7 +251,9 @@
 
     // per-game cards
     const g = $('#today-games');
-    const ids = Object.keys(day.byGame).sort((a, b) => meta(a).name.localeCompare(meta(b).name));
+    const ids = Object.keys(day.byGame).sort(
+    (a, b) => day.byGame[b].length - day.byGame[a].length || meta(a).name.localeCompare(meta(b).name)
+    );
     if (!ids.length) { g.innerHTML = ''; return; }
     g.innerHTML = ids.map((id) => {
       const list = day.byGame[id];
