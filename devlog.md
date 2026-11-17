@@ -43,3 +43,6 @@ worldle example
 🟩🟩🟩🟩🟩🎉
 
 https://worldle.teuteuf.fr/share
+
+multiple uploads at once tested and working.
+
