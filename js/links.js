@@ -17,7 +17,10 @@ window.GAME_LINKS = [
     { name: 'Globle',          url: 'https://globle-game.com',                               note: 'Find the country' },
     { name: 'Contexto',        url: 'https://contexto.me',                                   note: 'Word similarity' },
     { name: 'MapTap',          url: 'https://www.maptap.gg',                                 note: 'Find locations, get story' },
-    
+    { name: '4x3',             url: 'https://4x3.fun',                                       note: 'hank green' },
+    { name: 'Geozee',          url: 'https://geozee.earth',                                  note: 'match country to thing'},
+    { name: 'Catfishing',      url: 'https://catfishing.net',                                note: 'guess wiki article' },
+    { name: 'The Mini',        url: 'https://www.nytimes.com/crosswords/game/mini',          note: 'Mini crossword' },
     
   ]},
     { cat: 'Other', items: [
@@ -27,7 +30,6 @@ window.GAME_LINKS = [
     { name: 'PlayDaily hub',   url: 'https://playdaily.org',                                 note: 'Lots more games' },
   ]},
   { cat: 'NYT Games', items: [
-    { name: 'The Mini',        url: 'https://www.nytimes.com/crosswords/game/mini',          note: 'Mini crossword' },
     { name: 'Spelling Bee',    url: 'https://www.nytimes.com/puzzles/spelling-bee',          note: '7 letters' },
     { name: 'Letter Boxed',    url: 'https://www.nytimes.com/puzzles/letter-boxed',          note: 'Chain words' },
     { name: 'Tiles',           url: 'https://www.nytimes.com/games/tiles',                   note: 'Match patterns' },
@@ -46,7 +48,6 @@ window.GAME_LINKS = [
     { name: 'Cloudle',         url: 'https://cloudle.app',                                   note: 'Guess the weather' },
   ]},
   { cat: 'Trivia & more', items: [
-    { name: 'Contexto',        url: 'https://contexto.me',                                   note: 'Word similarity' },
     { name: 'Semantle',        url: 'https://semantle.com',                                  note: 'Word meaning' },
     { name: 'Framed',          url: 'https://framed.wtf',                                    note: 'Movie stills' },
     { name: 'Bandle',          url: 'https://bandle.app',                                    note: 'Song by instrument' },
