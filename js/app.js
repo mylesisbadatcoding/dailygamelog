@@ -230,7 +230,7 @@
 
   function playerCell(uk, name) {
     const me = state.user && uk === state.user.key;
-    return `${dot(uk)}${esc(name)}${me ? ' <span class="you">YOU</span>' : ''}`;
+    return `${dot(uk)}${me ? `<span class="me">${esc(name)}</span>` : esc(name)}`;
   }
 
   function renderToday() {
