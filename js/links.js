@@ -9,10 +9,12 @@ window.GAME_LINKS = [
     { name: 'Costcodle',       url: 'https://www.costcodle.com',                             note: 'Guess Costco prices' },
     { name: 'Wordle',          url: 'https://www.nytimes.com/games/wordle/index.html',       note: '6 tries' },
     { name: 'Strands',         url: 'https://www.nytimes.com/games/strands',                 note: 'Themed word search' },
+    { name: 'Noillirk',        url: 'https://playdaily.org/noillirk',                        note: 'Common answers climb' },
+    { name: 'Nerdle',          url: 'https://nerdlegame.com',                                note: 'Math equations' },
     
   ]},
     { cat: 'Other', items: [
-    { name: 'Noillirk',        url: 'https://playdaily.org/noillirk',                        note: 'Common answers climb' },
+    
     { name: 'Daily Red',       url: 'https://daily-red.com',                                 note: 'Beat Red' },
     { name: 'Daily Blue',      url: 'https://daily-red.com/blue',                            note: 'Beat Blue' },
     { name: 'Daily Lance',     url: 'https://daily-red.com/lance',                           note: 'Beat Lance' },
@@ -29,7 +31,7 @@ window.GAME_LINKS = [
   { cat: 'Wordle-likes', items: [
     { name: 'Quordle',         url: 'https://www.merriam-webster.com/games/quordle',         note: '4 boards' },
     { name: 'Octordle',        url: 'https://www.britannica.com/games/octordle',             note: '8 boards' },
-    { name: 'Nerdle',          url: 'https://nerdlegame.com',                                note: 'Math equations' },
+    
     { name: 'Waffle',          url: 'https://wafflegame.net',                                note: 'Swap tiles' },
     { name: 'Absurdle',        url: 'https://absurdle.online',                               note: 'Adversarial Wordle' },
     { name: 'Dordle',          url: 'https://zaratustra.itch.io/dordle',                     note: '2 boards' },
