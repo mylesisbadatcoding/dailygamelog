@@ -245,6 +245,44 @@
       },
     },
 
+    // maptap.gg November 16 \n 87🎓 75😂 ... \n Final score: 651   (higher wins)
+    {
+      name: 'maptap',
+      re: /maptap\.gg\)?[^\n]*/gi,
+      parse: (b) => {
+        const f = b.match(/Final score:\s*([\d,]+)/i);
+        if (!f) return null;
+        return { game: 'maptap', puzzle: null, score: num(f[1]), display: fmtInt(num(f[1])) + ' pts' };
+      },
+    },
+    
+    // 🌎 Nov 16, 2026 🌍 \n 🔥 1 | Avg. Guesses: 14 \n ...🟩 = 14   (lower wins)
+    {
+      name: 'globle',
+      re: /(?:[\u{1F30D}-\u{1F30F}][^\n]*\n)?[^\n]*Avg\.?\s*Guesses[^\n]*/giu,
+      parse: (b) => {
+        const g = b.match(/=\s*(\d+)/);
+        if (!g) return null;
+        return { game: 'globle', puzzle: null, score: Number(g[1]), display: g[1] + ' guesses' };
+      },
+    },
+    
+    // I played contexto.me 11/16/2026 and got it in 82 guesses and 2 hints.   (lower wins)
+    {
+      name: 'contexto',
+      re: /contexto\.me[^\n]*?got it in\s+(\d+)\s+guesses?(?:\s+and\s+(\d+)\s+hints?)?/gi,
+      parse: (b, m) => {
+        const hints = m[2] ? Number(m[2]) : 0;
+        return {
+          game: 'contexto',
+          puzzle: null,
+          score: Number(m[1]),
+          tie: hints,
+          display: m[1] + ' guesses' + (hints ? ` \u00b7 ${hints} ${hints === 1 ? 'hint' : 'hints'}` : ''),
+        };
+      },
+    },
+
     // Generic tries-style fallback: "Nerdle 123 4/6", "Worldle #900 X/6" ...
     {
       name: 'generic-tries',
