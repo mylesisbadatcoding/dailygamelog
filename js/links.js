@@ -12,6 +12,8 @@ window.GAME_LINKS = [
     { name: 'Noillirk',        url: 'https://playdaily.org/noillirk',                        note: 'Common answers climb' },
     { name: 'Nerdle',          url: 'https://nerdlegame.com',                                note: 'Math equations' },
     { name: 'Connections',     url: 'https://www.nytimes.com/games/connections',             note: 'Group 16 words' },
+    { name: 'Dordle',          url: 'https://zaratustra.itch.io/dordle',                     note: '2 boards' },
+    { name: 'Worldle',         url: 'https://worldle.teuteuf.fr',                            note: 'Country shapes' },
     
   ]},
     { cat: 'Other', items: [
@@ -35,11 +37,11 @@ window.GAME_LINKS = [
     
     { name: 'Waffle',          url: 'https://wafflegame.net',                                note: 'Swap tiles' },
     { name: 'Absurdle',        url: 'https://absurdle.online',                               note: 'Adversarial Wordle' },
-    { name: 'Dordle',          url: 'https://zaratustra.itch.io/dordle',                     note: '2 boards' },
+    
     { name: 'Squaredle',       url: 'https://squaredle.app',                                 note: 'Word grid' },
   ]},
   { cat: 'Geography', items: [
-    { name: 'Worldle',         url: 'https://worldle.teuteuf.fr',                            note: 'Country shapes' },
+    
     { name: 'Globle',          url: 'https://globle-game.com',                               note: 'Find the country' },
     { name: 'Tradle',          url: 'https://games.oec.world/en/tradle',                     note: 'Export treemaps' },
     { name: 'TimeGuessr',      url: 'https://timeguessr.com',                                note: 'Where and when' },
