@@ -1,8 +1,7 @@
-# rank2.day
-
-A dark, retro-future daily game leaderboard. Paste the "share" text from Wordle, Krillion, Costcodle and friends; it figures out the game and score, ranks everyone, and keeps a history.
-
-Pure static site (HTML/CSS/JS, no build step), so it hosts free on GitHub Pages.
+# daily.my1es.com
+- A leaderboard for friends to share their daily games scores. No more threads full of copy paste nonsense.
+- Paste the "share" text from Wordle, Krillion, Costcodle and friends; it figures out the game and score, ranks everyone, and keeps a history.
+- The site is static so we can use Github pages (weeee)
 
 ## Features
 
@@ -14,26 +13,11 @@ Pure static site (HTML/CSS/JS, no build step), so it hosts free on GitHub Pages.
 - **Works offline / solo**: data is saved in the browser by default.
 - **Shared mode (optional)**: add a free Firebase Realtime Database URL so friends see the same board.
 
-## Deploy to GitHub Pages
+## Quick facts:
+- Run locally: open `index.html`, or `npx serve .`.
+- you can use: https://htmlpreview.github.io/? before the index.html url to fast render any changes (like if you are working on a branch or something)
+- the realtime database rules are incredibly lax at the moment
 
-1. Create a new GitHub repo and push these files to `main`.
-2. Repo **Settings → Pages → Build and deployment**: Source = *Deploy from a branch*, Branch = `main`, folder = `/ (root)`.
-3. Wait a minute. Your site is at `https://<you>.github.io/<repo>/`.
-
-Run locally: open `index.html`, or `npx serve .`.
-
-## Share scores with friends (important)
-
-GitHub Pages is static, so by default each browser keeps its own data. To share one leaderboard:
-
-1. Go to <https://console.firebase.google.com>, create a project (free Spark plan).
-2. **Build → Realtime Database → Create database** (any region, start in locked mode).
-3. Open the **Rules** tab and paste the contents of `firebase-rules.json`, then Publish.
-4. Copy the database URL (looks like `https://xxxx-default-rtdb.firebaseio.com`).
-5. Put it in `js/config.js` as `firebaseUrl`, commit, push.
-6. Everyone logs in with their own username and the **same crew code**.
-
-Those rules are open: anyone who has your database URL and crew code could read or write scores. That fits a friends game. Do not put anything private in here.
 
 ## Scoring
 
@@ -56,6 +40,8 @@ Per game, per day, players are ranked (ties share a rank). With 2+ players on a 
 Wrong direction for a game? Flip `higher` in `js/games.js`. Krillion and Costcodle are the two I was least sure of.
 
 ## Add a new game
+
+I made a claude skill that does this well, i just need to add it to the repo.
 
 In `js/parsers.js`, add to `PARSERS`:
 
