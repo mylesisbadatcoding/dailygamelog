@@ -108,23 +108,16 @@
     },
 
     // NYT mini: 16s   |   I solved the Mini in 0:16
-    {
+        {
       name: 'nytmini',
-      re: /(?:NYT\s*Mini|solved the (?:NYT |New York Times )?(?:Daily )?Mini)/gi,
-      parse: (b) => {
-        const line = firstLine(b);
-        let secs = null;
-        let x = line.match(/(\d+):(\d{2})/);
-        if (x) {
-          secs = Number(x[1]) * 60 + Number(x[2]);
-        } else if ((x = line.match(/(?:(\d+)\s*m(?:in)?\w*\s*)?(\d+)\s*s(?:ec)?\w*/i))) {
-          secs = (x[1] ? Number(x[1]) * 60 : 0) + Number(x[2]);
-        }
-        if (secs == null) return null;
-        return { game: 'nytmini', puzzle: null, score: secs, display: mmss(secs) };
+      re: /nytimes\.com\/shared\/v2\/mini-xwd\.html\?[^\s]*?\bd=(\d{4}-\d{2}-\d{2})/gi,
+      parse: (b, m) => {
+        const t = b.match(/[?&]t=(\d+)/);
+        if (!t) return null;
+        const score = Number(t[1]);
+        return { game: 'nytmini', puzzle: Number(m[1].replace(/-/g, '')), score, display: mmss(score) };
       },
     },
-
     // Daily Red #16: Beat Red  \n 🟩🟩⬛⬛⬛🟩  3/6 left · 15 turns
     {
       name: 'daily-color',
