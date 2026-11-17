@@ -219,7 +219,7 @@ input[type=date] { width: auto; padding: 4px 8px; }
 .logging b.warn { color: var(--yellow); }
 @media (max-width: 860px) {
   .grid { grid-template-columns: 1fr; }
-  .panel.paste { position: static; }
+  .panel.paste { position: static; order: -1; }
 }
 
 /* ---------- tables ---------- */
