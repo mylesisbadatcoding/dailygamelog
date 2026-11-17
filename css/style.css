@@ -247,6 +247,8 @@ input[type=date] { width: auto; padding: 4px 8px; }
 .gcard .x { background: none; border: 0; color: var(--dim); cursor: pointer; font: inherit; padding: 0 2px; }
 .gcard .x:hover { color: var(--red); }
 .gcard .x-pad { width: 14px; }
+.gcard h3 a { color: var(--text); text-decoration: none; }
+.gcard h3 a:hover { color: var(--blue); text-decoration: underline; }
 
 /* ---------- paste preview ---------- */
 #preview { margin-top: 12px; }
