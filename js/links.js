@@ -14,17 +14,19 @@ window.GAME_LINKS = [
     { name: 'Connections',     url: 'https://www.nytimes.com/games/connections',             note: 'Group 16 words' },
     { name: 'Dordle',          url: 'https://zaratustra.itch.io/dordle',                     note: '2 boards' },
     { name: 'Worldle',         url: 'https://worldle.teuteuf.fr',                            note: 'Country shapes' },
+    { name: 'Globle',          url: 'https://globle-game.com',                               note: 'Find the country' },
+    { name: 'Contexto',        url: 'https://contexto.me',                                   note: 'Word similarity' },
+    { name: 'MapTap',          url: 'https://www.maptap.gg',                                 note: 'Find locations, get story' },
+    
     
   ]},
     { cat: 'Other', items: [
-    
     { name: 'Daily Red',       url: 'https://daily-red.com',                                 note: 'Beat Red' },
     { name: 'Daily Blue',      url: 'https://daily-red.com/blue',                            note: 'Beat Blue' },
     { name: 'Daily Lance',     url: 'https://daily-red.com/lance',                           note: 'Beat Lance' },
     { name: 'PlayDaily hub',   url: 'https://playdaily.org',                                 note: 'Lots more games' },
   ]},
   { cat: 'NYT Games', items: [
-    
     { name: 'The Mini',        url: 'https://www.nytimes.com/crosswords/game/mini',          note: 'Mini crossword' },
     { name: 'Spelling Bee',    url: 'https://www.nytimes.com/puzzles/spelling-bee',          note: '7 letters' },
     { name: 'Letter Boxed',    url: 'https://www.nytimes.com/puzzles/letter-boxed',          note: 'Chain words' },
@@ -34,15 +36,11 @@ window.GAME_LINKS = [
   { cat: 'Wordle-likes', items: [
     { name: 'Quordle',         url: 'https://www.merriam-webster.com/games/quordle',         note: '4 boards' },
     { name: 'Octordle',        url: 'https://www.britannica.com/games/octordle',             note: '8 boards' },
-    
     { name: 'Waffle',          url: 'https://wafflegame.net',                                note: 'Swap tiles' },
     { name: 'Absurdle',        url: 'https://absurdle.online',                               note: 'Adversarial Wordle' },
-    
     { name: 'Squaredle',       url: 'https://squaredle.app',                                 note: 'Word grid' },
   ]},
   { cat: 'Geography', items: [
-    
-    { name: 'Globle',          url: 'https://globle-game.com',                               note: 'Find the country' },
     { name: 'Tradle',          url: 'https://games.oec.world/en/tradle',                     note: 'Export treemaps' },
     { name: 'TimeGuessr',      url: 'https://timeguessr.com',                                note: 'Where and when' },
     { name: 'Cloudle',         url: 'https://cloudle.app',                                   note: 'Guess the weather' },
