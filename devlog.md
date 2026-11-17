@@ -16,13 +16,15 @@
 11/16/26 evening
 - need to add some games
 - play test a bunch of games
-- tested: noillirk, daily red/blue/lance (breaking if didnt win lol), dordle - needs parser, nerdle works - maybe need to add to games.js
+- tested: noillirk, daily red/blue/lance (breaking if didnt win lol), dordle - needs parser, nerdle works - maybe need to add to games.js, 
 
 daily red break copy
 Daily Red #36: Red won
 🟥⬛⬛⬛🟥⬛  2/6 KO'd · 11 turns
 #DailyRed
 daily-red.com
+
+update: daily red now parsing correctly but need to figure out how to assign a proper grade...
 
 dordle example
 Daily Dordle 1757 3&5/7 
