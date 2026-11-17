@@ -1,4 +1,4 @@
-- [ ] maptap
+- [x] maptap
 - [ ] globle
 - [ ] catfishing
 - [ ] https://www.hankgreen.com/fourbythree/
