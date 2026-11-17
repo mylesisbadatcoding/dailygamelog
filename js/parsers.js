@@ -118,6 +118,38 @@
         return { game: 'nytmini', puzzle: Number(m[1].replace(/-/g, '')), score, display: mmss(score) };
       },
     },
+    //4x3
+    {
+      name: 'fourbythree',
+      re: /(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}\s*\n\s*(\d+)\s+points?\b/gi,
+      parse: (b, m) => {
+        const mi = b.match(/(\d+)\s+mistakes?/i);
+        return { game: 'fourbythree', puzzle: null, score: Number(m[1]), tie: mi ? Number(mi[1]) : 0, display: m[1] + ' pts' };
+      },
+    },
+    //geozee
+  {
+    name: 'geozee',
+    re: /Geozee\s+#(\d+)/gi,
+    parse: (b, m) => {
+      const s = b.match(/(\d+)\s*\/\s*(\d+)/);
+      if (!s) return null;
+      const t = b.match(/top\s+(\d+)%/i);
+      return { game: 'geozee', puzzle: Number(m[1]), score: Number(s[1]), display: s[1] + '/' + s[2] + (t ? ' · top ' + t[1] + '%' : '') };
+    },
+  },
+    //catfishing
+  {
+    name: 'catfishing',
+    re: /catfishing\.net\s+#(\d+)/gi,
+    parse: (b, m) => {
+      const s = b.match(/-\s*(\d+|X)\s*\/\s*(\d+)/i);
+      if (!s) return null;
+      const max = Number(s[2]);
+      const fail = /x/i.test(s[1]);
+      return { game: 'catfishing', puzzle: Number(m[1]), score: fail ? max + 1 : Number(s[1]), display: s[1].toUpperCase() + '/' + max, fail };
+    },
+  },
     // Daily Red #16: Beat Red  \n 🟩🟩⬛⬛⬛🟩  3/6 left · 15 turns
     {
       name: 'daily-color',
