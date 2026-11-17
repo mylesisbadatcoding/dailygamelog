@@ -134,7 +134,7 @@ input[type=date] { width: auto; padding: 4px 8px; }
 .btn.gold { 
    background: var(--yellow); 
    border-color: var(--line2);
-   box-shadow: 0 4px 0 #85763f, 0 4px 0 3px var(--ink); 
+   box-shadow: 0 4px 0 #85763f, 0 4px 0 3px var(--line2); 
 }
 .btn.danger { background: var(--red); box-shadow: 0 4px 0 #834139, 0 4px 0 3px var(--ink); }
 .btn:disabled { background: #2a2e37; color: #666b78; box-shadow: 0 4px 0 #1a1d23, 0 4px 0 3px var(--ink); cursor: not-allowed; filter: none; }
