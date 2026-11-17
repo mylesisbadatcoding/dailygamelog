@@ -209,6 +209,42 @@
       },
     },
 
+    // Daily Dordle 1757 3&5/7   (score = total guesses across both boards, lower wins)
+    {
+      name: 'dordle',
+      re: /Daily Dordle\s+#?([\d,]+)\s+([1-9X])\s*&\s*([1-9X])\s*\/\s*(\d+)/gi,
+      parse: (b, m) => {
+        const max = Number(m[4]);
+        const g = [m[2], m[3]].map((x) => (/x/i.test(x) ? max + 1 : Number(x)));
+        const fail = /x/i.test(m[2] + m[3]);
+        const total = g[0] + g[1];
+        return {
+          game: 'dordle',
+          puzzle: num(m[1]),
+          score: total,
+          tie: Math.max(g[0], g[1]),
+          display: `${m[2].toUpperCase()}&${m[3].toUpperCase()}/${max}`,
+          fail,
+        };
+      },
+    },
+    
+    // #Worldle #1760 (16.11.2026) 3/6 (100%)
+    {
+      name: 'worldle',
+      re: /#?Worldle\s+#?([\d,]+)[^\n]*?\s([1-6X])\/6/gi,
+      parse: (b, m) => {
+        const fail = /x/i.test(m[2]);
+        return {
+          game: 'worldle',
+          puzzle: num(m[1]),
+          score: fail ? 7 : Number(m[2]),
+          display: (fail ? 'X' : m[2]) + '/6',
+          fail,
+        };
+      },
+    },
+
     // Generic tries-style fallback: "Nerdle 123 4/6", "Worldle #900 X/6" ...
     {
       name: 'generic-tries',
