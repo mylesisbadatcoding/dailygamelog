@@ -28,7 +28,7 @@
     contexto:      { name: 'Contexto',        icon: '🔎', higher: false,               url: 'https://contexto.me' },
     fourbythree:   { name: '4x3',             icon: '🟨', higher: true, fmt: 'int',    url: 'https://4x3.fun' },
     geozee:        { name: 'Geozee',          icon: '💤', higher: true, fmt: 'int',    url: 'https://geozee.earth' },
-    catfishing:    { name: 'Catfishing',      icon: '🐟', higher: false, fmt: 'int',   url: 'https://catfishing.net' },
+    catfishing:    { name: 'Catfishing',      icon: '🐟', higher: true, fmt: 'int',   url: 'https://catfishing.net' },
   };
 
   function meta(id, entry) {
