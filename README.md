@@ -11,7 +11,6 @@
 - **Archive panels**: all-time standings, day-by-day history, a cumulative points chart, per-game bests/averages, JSON export/import.
 - **Games drawer**: a pop-out list of daily game links (`js/links.js`).
 - **Works offline / solo**: data is saved in the browser by default.
-- **Shared mode (optional)**: add a free Firebase Realtime Database URL so friends see the same board.
 
 ## Quick facts:
 - Run locally: open `index.html`, or `npx serve .`.
