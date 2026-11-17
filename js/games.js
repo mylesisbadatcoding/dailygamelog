@@ -23,6 +23,9 @@
     nerdle:        { name: 'Nerdle',          icon: '🤓', higher: false,               url: 'https://nerdlegame.com' },
     dordle:        { name: 'Dordle',          icon: '2️⃣', higher: false,               url: 'https://zaratustra.itch.io/dordle' },
     worldle:       { name: 'Worldle',         icon: '🌍', higher: false,               url: 'https://worldle.teuteuf.fr' },
+    maptap:        { name: 'MapTap',          icon: '📍', higher: true,  fmt: 'int',   url: 'https://www.maptap.gg' },
+    globle:        { name: 'Globle',          icon: '🌐', higher: false,               url: 'https://globle-game.com' },
+    contexto:      { name: 'Contexto',        icon: '🔎', higher: false,               url: 'https://contexto.me' },
   };
 
   function meta(id, entry) {
