@@ -16,7 +16,7 @@
 11/16/26 evening
 - need to add some games
 - play test a bunch of games
-- tested: noillirk, daily red/blue/lance (breaking if didnt win lol), dordle - needs parser, nerdle works - maybe need to add to games.js, 
+- tested: noillirk, daily red/blue/lance (breaking if didnt win lol), dordle - needs parser, nerdle works - maybe need to add to games.js, worldle - doesnt work
 
 daily red break copy
 Daily Red #36: Red won
@@ -34,3 +34,12 @@ Daily Dordle 1757 3&5/7
 ⬛⬛⬛⬛⬛ ⬜🟩🟩🟩🟩
 ⬛⬛⬛⬛⬛ 🟩🟩🟩🟩🟩
 zaratustra.itch.io/dordle
+
+worldle example
+#Worldle #1760 (16.11.2026) 3/6 (100%)
+🔥 Current Win Streak: 1 days
+🟩🟩🟩🟨⬜↘️
+🟩🟩🟩🟨⬜↘️
+🟩🟩🟩🟩🟩🎉
+
+https://worldle.teuteuf.fr/share
