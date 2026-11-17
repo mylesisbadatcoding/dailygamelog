@@ -20,6 +20,7 @@
     connections:   { name: 'Connections',     icon: '🔗', higher: false,               url: 'https://www.nytimes.com/games/connections' },
     strands:       { name: 'Strands',         icon: '💡', higher: false,               url: 'https://www.nytimes.com/games/strands' },
     quordle:       { name: 'Quordle',         icon: '4️⃣', higher: false,               url: 'https://www.merriam-webster.com/games/quordle' },
+    nerdle:        { name: 'Nerdle',          icon: '🤓', higher: false,               url: 'https://nerdlegame.com' },
   };
 
   function meta(id, entry) {
