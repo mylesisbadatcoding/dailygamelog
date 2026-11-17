@@ -128,19 +128,27 @@
     // Daily Red #16: Beat Red  \n 🟩🟩⬛⬛⬛🟩  3/6 left · 15 turns
     {
       name: 'daily-color',
-      re: /Daily\s+([A-Za-z]+)\s*#(\d+)\s*:\s*Beat/gi,
+      re: /Daily\s+([A-Za-z]+)\s*#(\d+)\s*:\s*(?:Beat|[A-Za-z]+\s+won)/gi,
       parse: (b, m) => {
-        const left = b.match(/(\d+)\s*\/\s*(\d+)\s*left/i);
-        if (!left) return null;
         const turns = b.match(/(\d+)\s*turns?/i);
         const t = turns ? Number(turns[1]) : 0;
+        const left = b.match(/(\d+)\s*\/\s*(\d+)\s*left/i);
+        const ko = b.match(/(\d+)\s*\/\s*(\d+)\s*KO/i);
+        let score, display;
+        if (left) {
+          score = Number(left[1]); // win: lives left, higher is better
+          display = `${left[1]}/${left[2]} left \u00b7 ${t} turns`;
+        } else if (ko) {
+          score = 0; // "<Color> won" = a loss
+          display = `Lost \u00b7 ${ko[1]}/${ko[2]} KO'd \u00b7 ${t} turns`;
+        } else return null;
         return {
           game: 'daily-' + m[1].toLowerCase(),
           gameName: 'Daily ' + cap(m[1]),
           puzzle: Number(m[2]),
-          score: Number(left[1]), // lives left - higher is better
+          score,
           tie: t, // fewer turns breaks ties
-          display: `${left[1]}/${left[2]} left \u00b7 ${t} turns`,
+          display,
         };
       },
     },
