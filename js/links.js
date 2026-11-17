@@ -11,6 +11,7 @@ window.GAME_LINKS = [
     { name: 'Strands',         url: 'https://www.nytimes.com/games/strands',                 note: 'Themed word search' },
     { name: 'Noillirk',        url: 'https://playdaily.org/noillirk',                        note: 'Common answers climb' },
     { name: 'Nerdle',          url: 'https://nerdlegame.com',                                note: 'Math equations' },
+    { name: 'Connections',     url: 'https://www.nytimes.com/games/connections',             note: 'Group 16 words' },
     
   ]},
     { cat: 'Other', items: [
@@ -21,7 +22,7 @@ window.GAME_LINKS = [
     { name: 'PlayDaily hub',   url: 'https://playdaily.org',                                 note: 'Lots more games' },
   ]},
   { cat: 'NYT Games', items: [
-    { name: 'Connections',     url: 'https://www.nytimes.com/games/connections',             note: 'Group 16 words' },
+    
     { name: 'The Mini',        url: 'https://www.nytimes.com/crosswords/game/mini',          note: 'Mini crossword' },
     { name: 'Spelling Bee',    url: 'https://www.nytimes.com/puzzles/spelling-bee',          note: '7 letters' },
     { name: 'Letter Boxed',    url: 'https://www.nytimes.com/puzzles/letter-boxed',          note: 'Chain words' },
