@@ -1,5 +1,5 @@
-- [x] maptap
-- [ ] globle
-- [ ] catfishing
-- [ ] https://www.hankgreen.com/fourbythree/
-- [ ] 
+- [x] maptap - Spencer
+- [x] globle - Spencer
+- [ ] catfishing - Annie Homer
+- [ ] https://www.hankgreen.com/fourbythree/ - Spencer
+- [ ] https://geozee.earth/?ref=share - Spencer
