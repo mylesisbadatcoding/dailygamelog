@@ -307,6 +307,17 @@
         };
       },
     },
+    
+    // Nerdle
+    {
+      name: 'nerdle',
+      re: /nerdlegame\s+(\d+)\s+(\d+|X)\s*\/\s*(\d+)/gi,
+      parse: (b, m) => {
+        const max = Number(m[3]);
+        const fail = /x/i.test(m[2]);
+        return { game: 'nerdle', puzzle: Number(m[1]), score: fail ? max + 1 : Number(m[2]), display: m[2].toUpperCase() + '/' + max, fail };
+      },
+    },
 
     // Generic tries-style fallback: "Nerdle 123 4/6", "Worldle #900 X/6" ...
     {
