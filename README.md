@@ -3,6 +3,10 @@
 - Paste the "share" text from Wordle, Krillion, Costcodle and friends; it figures out the game and score, ranks everyone, and keeps a history.
 - The site is static so we can use Github pages (weeee)
 
+## TODO
+- [ ] fix nerdle _ game file is off, maybe i forgot to add it
+- [ ] fix geozee _ the percentile raking is wrong, we can remove it.
+
 ## Features
 
 - **Username login**: no password. A new name creates a new save file.
