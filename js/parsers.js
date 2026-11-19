@@ -318,7 +318,47 @@
         return { game: 'nerdle', puzzle: Number(m[1]), score: fail ? max + 1 : Number(m[2]), display: m[2].toUpperCase() + '/' + max, fail };
       },
     },
-
+//farflung
+    {
+  name: 'farflung',
+  re: /Farflung\s+#(\d+)/gi,
+  parse: (b, m) => {
+    const s = b.match(/·\s*([\d,]+)\s*\/\s*([\d,]+)\s*km/i);
+    if (!s) return null;
+    return { game: 'farflung', puzzle: Number(m[1]), score: Number(s[1].replace(/,/g, '')), display: s[1] + '/' + s[2] + ' km' };
+  },
+},
+    //chainle
+{
+  name: 'chainle',
+  re: /Chainle\s+#(\d+)/gi,
+  parse: (b, m) => {
+    const s = b.match(/·\s*([\d,]+)/);
+    if (!s) return null;
+    const t = b.match(/Beat\s+(\d+)%/i);
+    return { game: 'chainle', puzzle: Number(m[1]), score: Number(s[1].replace(/,/g, '')), display: s[1] + (t ? ' · top ' + (100 - Number(t[1])) + '%' : '') };
+  },
+},
+    //where taken
+{
+  name: 'wheretaken',
+  re: /#WhereTaken\s+#(\d+)/gi,
+  parse: (b, m) => {
+    const s = b.match(/scored\s+([\d,]+)\s*\/\s*([\d,]+)/i);
+    if (!s) return null;
+    return { game: 'wheretaken', puzzle: Number(m[1]), score: Number(s[1].replace(/,/g, '')), display: s[1] + '/' + s[2] };
+  },
+},
+//wheronaut
+{
+  name: 'wheronaut',
+  re: /Wheronaut\s+#(\d+)/gi,
+  parse: (b, m) => {
+    const s = b.match(/(\d+)\s*\/\s*(\d+)\s+answered\s*·\s*([\d,.]+)\s*m\b/i);
+    if (!s) return null;
+    return { game: 'wheronaut', puzzle: Number(m[1]), score: Number(s[3].replace(/,/g, '')), display: s[3] + ' m · ' + s[1] + '/' + s[2] };
+  },
+},
     // Generic tries-style fallback: "Nerdle 123 4/6", "Worldle #900 X/6" ...
     {
       name: 'generic-tries',
