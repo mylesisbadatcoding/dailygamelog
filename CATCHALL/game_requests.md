@@ -3,6 +3,6 @@
 - [x] catfishing - Annie Homer
 - [x] https://www.hankgreen.com/fourbythree/ - Spencer
 - [x] https://geozee.earth/?ref=share - Spencer
-- [ ] https://farflung.game/
-- [ ] https://wheretaken.com/game
-- [ ] https://wheronaut.com/
+- [ ] https://farflung.game/ - Spencer
+- [ ] https://wheretaken.com/game - Spencer
+- [ ] https://wheronaut.com/ - Spencer
