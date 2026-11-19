@@ -7,6 +7,7 @@
 - [ ] fix nerdle _ game file is off, maybe i forgot to add it
   - [ ] this is done, but need to backfill data that was logged wrong
 - [ ] fix geozee _ the percentile raking is wrong, we can remove it.
+- [ ] fix noillirk _ wont accept stink's perfect score
 
 ## Features
 
