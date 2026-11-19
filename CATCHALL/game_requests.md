@@ -6,3 +6,4 @@
 - [ ] https://farflung.game/ - Spencer
 - [ ] https://wheretaken.com/game - Spencer
 - [ ] https://wheronaut.com/ - Spencer
+- [ ] http://chainle.io/ - Cade
