@@ -28,7 +28,11 @@
     contexto:      { name: 'Contexto',        icon: '🔎', higher: false,               url: 'https://contexto.me' },
     fourbythree:   { name: '4x3',             icon: '🟨', higher: true, fmt: 'int',    url: 'https://4x3.fun' },
     geozee:        { name: 'Geozee',          icon: '💤', higher: true, fmt: 'int',    url: 'https://geozee.earth' },
-    catfishing:    { name: 'Catfishing',      icon: '🐟', higher: true, fmt: 'int',   url: 'https://catfishing.net' },
+    catfishing:    { name: 'Catfishing',      icon: '🐟', higher: true, fmt: 'int',    url: 'https://catfishing.net' },
+    farflung:      { name: 'Farflung',        icon: '🧭', higher: true, fmt: 'int',    url: 'https://farflung.game' },
+    chainle:       { name: 'Chainle',         icon: '🔗', higher: true, fmt: 'int',    url: 'https://chainle.io' },
+    wheretaken:    { name: 'WhereTaken',      icon: '📍', higher: true, fmt: 'int',    url: 'https://wheretaken.com' },
+    wheronaut:     { name: 'Wheronaut',       icon: '🍃', higher: true, fmt: 'int',    url: 'https://wheronaut.com' },
   };
 
   function meta(id, entry) {
