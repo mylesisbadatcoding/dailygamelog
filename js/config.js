@@ -13,7 +13,7 @@
 window.PIXELRANK_CONFIG = {
   title: 'rank2.day',
   firebaseUrl: 'https://dailygamelog-bd048-default-rtdb.firebaseio.com/',
-  firebaseApiKey: '',
+  firebaseApiKey: 'AIzaSyD07lBuVEzET2G9yahaEK1Sb3-xZvhizAE',
   adminUsername: 'myles',
   allCrew: 'all',
   points: [3, 2, 1],    // points for 1st, 2nd, 3rd place per game per day
