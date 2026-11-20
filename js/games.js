@@ -33,6 +33,7 @@
     chainle:       { name: 'Chainle',         icon: '🔗', higher: true, fmt: 'int',    url: 'https://chainle.io' },
     wheretaken:    { name: 'WhereTaken',      icon: '📍', higher: true, fmt: 'int',    url: 'https://wheretaken.com' },
     wheronaut:     { name: 'Wheronaut',       icon: '🍃', higher: true, fmt: 'int',    url: 'https://wheronaut.com' },
+    dailytens:     { name: 'Daily Tens',      icon: '🔟', higher: true, fmt: 'int',    url: 'https://dailytens.com' },
   };
 
   function meta(id, entry) {
