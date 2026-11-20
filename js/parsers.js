@@ -362,7 +362,7 @@
     //daily 10
     {
   name: 'dailytens',
-  re: /Daily\s+Tens\s+#(\d+)/gi,
+  re: /Daily\s*Tens\s+#(\d+)/gi,
   parse: (b, m) => {
     const win = [...b.matchAll(/🏆/gu)].length;
     const miss = [...b.matchAll(/❌/gu)].length;
@@ -370,6 +370,7 @@
     return { game: 'dailytens', puzzle: Number(m[1]), score: win, display: win + '/10' };
   },
 },
+    
     // Generic tries-style fallback: "Nerdle 123 4/6", "Worldle #900 X/6" ...
     {
       name: 'generic-tries',
