@@ -1,10 +1,56 @@
 {
   "rules": {
-    "groups": {
-      "$group": {
-        ".read": true,
-        ".write": true
+    ".read": false,
+    ".write": false,
+    "usernames": {
+      ".read": true,
+      "$key": {
+        ".write": "auth != null && ((!data.exists() && newData.child('claimed').val() === false) || (root.child('users').child($key).child('uid').val() === auth.uid) || (auth != null && root.child('uids').child(auth.uid).exists() && root.child('users').child(root.child('uids').child(auth.uid).val()).child('uid').val() === auth.uid && root.child('users').child(root.child('uids').child(auth.uid).val()).child('role').val() === 'admin'))",
+        ".validate": "newData.hasChildren(['name','claimed']) && newData.child('name').isString() && newData.child('name').val().length <= 20 && newData.child('claimed').isBoolean()"
       }
+    },
+    "loginEmail": {
+      "$key": {
+        ".read": true,
+        ".write": "auth != null && ((root.child('users').child($key).child('uid').val() === auth.uid) || (auth != null && root.child('uids').child(auth.uid).exists() && root.child('users').child(root.child('uids').child(auth.uid).val()).child('uid').val() === auth.uid && root.child('users').child(root.child('uids').child(auth.uid).val()).child('role').val() === 'admin'))",
+        ".validate": "newData.isString() && newData.val().length < 200"
+      }
+    },
+    "uids": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && root.child('users').child(newData.val()).child('uid').val() === auth.uid"
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      "$key": {
+        ".write": "auth != null && root.child('uids').child(auth.uid).exists() && root.child('users').child(root.child('uids').child(auth.uid).val()).child('uid').val() === auth.uid && root.child('users').child(root.child('uids').child(auth.uid).val()).child('role').val() === 'admin'",
+        "uid": {
+          ".write": "auth != null && !data.exists() && newData.val() === auth.uid"
+        },
+        "name": {
+          ".write": "root.child('users').child($key).child('uid').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length <= 20"
+        },
+        "role": {
+          ".write": "(root.child('users').child($key).child('uid').val() === auth.uid) && !data.exists() && (newData.val() === 'player' || ($key === 'myles' && newData.val() === 'admin'))",
+          ".validate": "newData.val() === 'player' || newData.val() === 'admin'"
+        },
+        "crews": {
+          ".write": "root.child('users').child($key).child('uid').val() === auth.uid",
+          "$code": {
+            ".validate": "newData.val() === true"
+          }
+        },
+        "entries": {
+          ".write": "root.child('users').child($key).child('uid').val() === auth.uid"
+        }
+      }
+    },
+    "groups": {
+      ".read": "auth != null",
+      ".write": false
     }
   }
 }
