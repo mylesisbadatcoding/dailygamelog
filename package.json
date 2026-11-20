@@ -4,7 +4,8 @@
   "description": "8-bit daily game score leaderboard. Static site for GitHub Pages.",
   "scripts": {
     "test": "node tests/parsers.test.js",
-    "start": "npx serve ."
+    "start": "npx serve .",
+    "test:accounts": "node tests/accounts.test.js"
   },
   "license": "MIT"
 }

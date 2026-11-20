@@ -86,12 +86,10 @@ code { background: var(--surface2); padding: 0 4px; }
 .login .sub { margin: 0 0 14px; color: var(--dim); }
 .login form { text-align: left; }
 .login .btn { width: 100%; margin-top: 14px; }
-#profiles { margin-top: 16px; text-align: left; }
-#profiles .btn { margin: 0 6px 8px 0; }
 .logo { image-rendering: pixelated; }
 
 /* ---------- inputs ---------- */
-input[type=text], input[type=date], input[type=search], textarea {
+input[type=text], input[type=email], input[type=password], input[type=date], input[type=search], select, textarea {
   width: 100%;
   background: var(--bg);
   color: var(--text);
@@ -304,3 +302,53 @@ input[type=date] { width: auto; padding: 4px 8px; }
   transition: transform .15s steps(4); max-width: 90vw;
 }
 #toast.show { transform: translate(-50%, 0); }
+
+/* ---------- login: username cloud, form extras ---------- */
+.login { position: relative; z-index: 2; }
+.login .links { display: flex; justify-content: space-between; gap: 8px; margin: 14px 0 0; }
+.linkbtn { background: none; border: 0; padding: 0; cursor: pointer; font-family: 'Press Start 2P', monospace; font-size: .42rem; color: var(--blue); }
+.linkbtn:hover { color: var(--yellow); text-decoration: underline; }
+.note { margin: 0 0 6px; padding: 8px 10px; background: var(--surface2); border: 2px solid var(--yellow); border-radius: 4px; color: var(--yellow); font-size: 1rem; }
+#login-cloud { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+.cloud-chip {
+  position: absolute; transform: translate(-50%, -50%);
+  pointer-events: auto; cursor: pointer;
+  font-family: 'Press Start 2P', monospace; font-size: .5rem; white-space: nowrap;
+  color: var(--text); background: var(--surface2);
+  border: 2px solid var(--cc, var(--line2)); border-radius: 4px; padding: 8px 10px;
+  box-shadow: 0 3px 0 #0a0b0d;
+  animation: bob 4s steps(2, end) infinite; animation-delay: var(--d, 0s);
+}
+.cloud-chip:hover { color: var(--ink); background: var(--cc, var(--blue)); }
+.cloud-chip.new { border-style: dashed; color: var(--dim); }
+.cloud-chip.new::after { content: ' !'; color: var(--yellow); }
+@keyframes bob { 50% { margin-top: -3px; } }
+@media (prefers-reduced-motion: reduce) { .cloud-chip { animation: none; } }
+@media (max-width: 760px) {
+  .screen { align-content: center; }
+  #login-cloud { position: static; order: 2; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; pointer-events: auto; overflow: visible; }
+  .cloud-chip { position: static; transform: none; animation: none; }
+}
+
+/* ---------- user bar: account chip + modal ---------- */
+button.chip { cursor: pointer; font-family: 'Press Start 2P', monospace; }
+button.chip:hover { border-color: var(--green); }
+.chip small.admin { color: var(--yellow); }
+.modal { position: fixed; inset: 0; z-index: 960; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.7); overflow-y: auto; }
+.modal-box { width: min(480px, 100%); max-height: 92vh; overflow-y: auto; }
+.modal-box h3 { margin: 18px 0 8px; color: var(--text); }
+.modal-box .row { display: flex; gap: 8px; align-items: center; }
+.modal-box .row .btn { margin: 0; flex: none; }
+.kv { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.kv span:first-child { color: var(--dim); }
+.crew-list { list-style: none; margin: 0; padding: 0; }
+.crew-list li { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 2px solid var(--line); border-radius: 4px; margin-bottom: 6px; background: var(--bg); }
+.crew-list li.on { border-color: var(--green); }
+.crew-list .pick { flex: 1; text-align: left; background: none; border: 0; color: var(--text); font: inherit; font-size: 1.15rem; cursor: pointer; padding: 0; }
+.crew-list .tick { color: var(--green); width: 14px; }
+.crew-list .x { background: none; border: 0; color: var(--dim); cursor: pointer; font: inherit; }
+.crew-list .x:hover { color: var(--red); }
+.admin-users { width: 100%; border-collapse: collapse; }
+.admin-users td { padding: 5px 4px; border-bottom: 1px solid var(--line); }
+.admin-users select { width: auto; padding: 3px 6px; font-size: 1rem; }
+.ok-text { color: var(--green); }

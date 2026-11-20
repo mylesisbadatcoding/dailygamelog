@@ -7,7 +7,9 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const cfg = window.PIXELRANK_CONFIG || {};
   const POINTS = cfg.points || [3, 2, 1];
-  const SESSION = 'pixelrank.session';
+  const SESSION = 'pixelrank.session2';   // { key, refresh }
+  const CREW_KEY = 'pixelrank.crew.';     // + user key -> active crew code on this device
+  const ALL = Store.ALL;
   const MEDALS = ['🥇', '🥈', '🥉'];
   const PALETTE = ['#c8665e', '#6fa583', '#6a8fc4', '#cdb765', '#9a82b8', '#cf9a5a', '#6fa9ad', '#a39e92'];
 
@@ -22,8 +24,8 @@
     parseDate(s).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 
   const state = {
-    user: null,           // { name, key }
-    group: 'home',
+    user: null,           // { name, key, uid, email, role }
+    crew: ALL,            // active crew filter ('all' shows everyone)
     db: { users: {} },
     online: false,
     date: today(),
@@ -42,9 +44,25 @@
     return (a.tie || 0) - (b.tie || 0);
   }
 
+  const isAdmin = () => !!(state.user && state.user.role === 'admin');
+
+  /** Accounts the active crew code lets you see ('all' = everyone). */
+  function visibleUsers() {
+    if (state.crew === ALL) return state.db.users;
+    const out = {};
+    for (const [uk, u] of Object.entries(state.db.users)) {
+      if ((u.crews && u.crews[state.crew]) || (state.user && uk === state.user.key)) out[uk] = u;
+    }
+    return out;
+  }
+  const myCrews = () => {
+    const me = state.db.users[state.user.key];
+    return Object.keys((me && me.crews) || {}).sort();
+  };
+
   function allEntries() {
     const out = [];
-    for (const [uk, u] of Object.entries(state.db.users)) {
+    for (const [uk, u] of Object.entries(visibleUsers())) {
       for (const [ek, e] of Object.entries(u.entries || {})) out.push(Object.assign({ uk, ek, name: u.name || uk }, e));
     }
     return out;
@@ -60,7 +78,7 @@
   /** Per-day results: ranks, points, medals */
   function computeDay(date) {
     const byGame = {};
-    for (const [uk, u] of Object.entries(state.db.users)) {
+    for (const [uk, u] of Object.entries(visibleUsers())) {
       for (const [ek, e] of Object.entries(u.entries || {})) {
         if (e.date === date) (byGame[e.game] = byGame[e.game] || []).push({ uk, ek, name: u.name || uk, e });
       }
@@ -103,7 +121,7 @@
     const acc = {};
     const series = {};
     const days = [];
-    for (const uk of Object.keys(state.db.users)) {
+    for (const uk of Object.keys(visibleUsers())) {
       acc[uk] = { uk, name: state.db.users[uk].name || uk, pts: 0, gold: 0, silver: 0, bronze: 0, played: 0, days: 0 };
       series[uk] = [];
     }
@@ -138,88 +156,267 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
   }
 
+  /* ---------- errors ---------- */
+  const ERRORS = {
+    EMAIL_EXISTS: 'That email already has an account.',
+    INVALID_EMAIL: 'That email address does not look right.',
+    WEAK_PASSWORD: 'Password must be at least 6 characters.',
+    INVALID_LOGIN_CREDENTIALS: 'Wrong username or password.',
+    INVALID_PASSWORD: 'Wrong username or password.',
+    EMAIL_NOT_FOUND: 'No account for that email.',
+    USER_DISABLED: 'This account is disabled.',
+    TOO_MANY_ATTEMPTS_TRY_LATER: 'Too many attempts. Wait a bit and try again.',
+    OPERATION_NOT_ALLOWED: 'Email/password sign-in is not enabled (or email change needs verification) in Firebase.',
+    CREDENTIAL_TOO_OLD_LOGIN_AGAIN: 'Please log in again, then retry.',
+    USERNAME_TAKEN: 'That username is already claimed by someone else.',
+    NOT_OWNER: 'This login does not own that username.',
+    NOT_CONFIGURED: 'Setup needed: add firebaseApiKey to js/config.js.',
+    API_KEY_INVALID: 'Setup needed: firebaseApiKey in js/config.js is invalid.',
+    HTTP_401: 'Permission denied by the database rules.',
+    HTTP_403: 'Permission denied by the database rules.',
+  };
+  const errText = (e) => ERRORS[e && e.code] || ((e && e.message) || 'Something went wrong.');
+
   /* ---------- login ---------- */
-  function initLogin() {
-    const box = $('#profiles');
-    const profs = Store.localProfiles();
-    if (profs.length) {
-      box.innerHTML =
-        '<div class="label">SAVE FILES ON THIS DEVICE</div>' +
-        profs.map((p, i) => `<button type="button" class="btn small ghost" data-prof="${i}">${esc(p.name)}${Store.remote ? ' @' + esc(p.group) : ''}</button>`).join(' ');
-      box.onclick = (ev) => {
-        const b = ev.target.closest('[data-prof]');
-        if (!b) return;
-        const p = profs[Number(b.dataset.prof)];
-        login(p.name, p.group);
-      };
-    } else {
-      box.innerHTML = '';
-    }
+  const login = { mode: 'login', names: [] };   // mode: 'login' | 'signup' | 'claim'
 
-    $('#login-form').onsubmit = (ev) => {
-      ev.preventDefault();
-      login($('#in-name').value, $('#in-crew').value);
-    };
-
-    try {
-      const s = JSON.parse(localStorage.getItem(SESSION));
-      if (s && s.name) login(s.name, s.crew, true);
-    } catch (e) { /* ignore */ }
+  function setMode(mode, note) {
+    login.mode = mode;
+    const signup = mode !== 'login';
+    $('#signup-fields').hidden = !signup;
+    $('#signup-fields2').hidden = !signup;
+    $('#in-email').required = signup;
+    $('#in-pass2').required = signup;
+    $('#in-pass').autocomplete = signup ? 'new-password' : 'current-password';
+    $('#login-submit').textContent = mode === 'claim' ? 'SET UP ACCOUNT ▶' : signup ? 'CREATE ACCOUNT ▶' : 'LOG IN ▶';
+    $('#login-toggle').textContent = signup ? 'BACK TO LOG IN' : 'CREATE ACCOUNT';
+    $('#login-forgot').hidden = signup;
+    const n = $('#login-note');
+    n.hidden = !note;
+    n.textContent = note || '';
+    $('#login-err').textContent = '';
   }
 
-  async function login(name, crew, silent) {
-    name = String(name || '').trim().slice(0, 20);
+  /** Match the typed username against the public list and pick the right form. */
+  function syncModeToName() {
+    const key = Store.slug($('#in-name').value);
+    const hit = login.names.find((n) => n.key === key);
+    if (hit && !hit.claimed) {
+      if (login.mode !== 'claim') setMode('claim', 'Your account needs an email and a password. Set them up to continue.');
+    } else if (hit && login.mode !== 'login') {
+      setMode('login');
+    } else if (!hit && login.mode === 'claim') {
+      setMode('login');
+    }
+  }
+
+  const CLOUD_COLORS = PALETTE;
+  function renderCloud() {
+    const box = $('#login-cloud');
+    const names = login.names;
+    box.innerHTML = names.map((n, i) =>
+      `<button type="button" class="cloud-chip${n.claimed ? '' : ' new'}" data-name="${esc(n.name)}" style="--cc:${CLOUD_COLORS[i % CLOUD_COLORS.length]};--d:${((i * 0.37) % 2).toFixed(2)}s" title="${n.claimed ? 'Log in as ' : 'Set up '}${esc(n.name)}">${esc(n.name)}</button>`
+    ).join('');
+    placeCloud();
+  }
+
+  /** Scatter chips on an ellipse that circumscribes the login panel (CSS stacks them on narrow screens). */
+  function placeCloud() {
+    const box = $('#login-cloud');
+    if (window.matchMedia('(max-width: 760px)').matches) return;
+    const panel = $('.panel.login');
+    const chips = $$('.cloud-chip', box);
+    if (!chips.length || !panel) return;
+    const W = box.clientWidth, H = box.clientHeight;
+    const pw = panel.offsetWidth, ph = panel.offsetHeight;
+    const cx = W / 2, cy = panel.offsetTop + ph / 2;
+    const GAP = 14;
+    const n = chips.length;
+    const rings = Math.ceil(n / 14);               // spill into outer rings when crowded
+    chips.forEach((c, i) => {
+      const hw = c.offsetWidth / 2, hh = c.offsetHeight / 2;
+      const ring = i % rings;
+      const idxInRing = Math.floor(i / rings);
+      const inRing = Math.ceil((n - ring) / rings);
+      const seed = Math.sin((i + 1) * 12.9898) * 43758.5453;
+      const jit = seed - Math.floor(seed);
+      const ang = ((idxInRing + (ring % 2) * 0.5) / inRing) * Math.PI * 2 - Math.PI / 2 + (jit - 0.5) * 0.18;
+      // ellipse through the panel's corners, pushed out by the chip size
+      const rx = (pw / 2 + hw) * 1.42 + GAP + ring * 70 + jit * 16;
+      const ry = (ph / 2 + hh) * 1.42 + GAP + ring * 44 + jit * 12;
+      let x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
+      const clamp = () => {
+        x = Math.min(W - hw - 6, Math.max(hw + 6, x));
+        y = Math.min(H - hh - 6, Math.max(hh + 6, y));
+      };
+      clamp();
+      // if clamping to the viewport pushed it onto the panel, slide it out along the shorter way
+      const px0 = cx - pw / 2 - GAP, px1 = cx + pw / 2 + GAP, py0 = panel.offsetTop - GAP, py1 = panel.offsetTop + ph + GAP;
+      if (x + hw > px0 && x - hw < px1 && y + hh > py0 && y - hh < py1) {
+        const toLeft = x + hw - px0, toRight = px1 - (x - hw), toTop = y + hh - py0, toBottom = py1 - (y - hh);
+        const m = Math.min(toLeft, toRight, toTop, toBottom);
+        if (m === toLeft) x = px0 - hw; else if (m === toRight) x = px1 + hw; else if (m === toTop) y = py0 - hh; else y = py1 + hh;
+        clamp();
+      }
+      c.style.left = x + 'px';
+      c.style.top = y + 'px';
+    });
+  }
+
+  async function loadCloud() {
+    try { login.names = await Store.listUsernames(); } catch (e) { login.names = []; }
+    renderCloud();
+    syncModeToName();
+  }
+
+  function initLogin() {
+    if (!Store.configured) {
+      $('#login-err').textContent = ERRORS.NOT_CONFIGURED;
+      $('#login-submit').disabled = true;
+      return;
+    }
+    $('#login-form').onsubmit = (ev) => { ev.preventDefault(); submitLogin(); };
+    $('#in-name').addEventListener('input', syncModeToName);
+    $('#login-toggle').onclick = () => {
+      if (login.mode === 'login') setMode('signup'); else setMode('login');
+    };
+    $('#login-forgot').onclick = forgotPassword;
+    $('#login-cloud').addEventListener('click', (ev) => {
+      const b = ev.target.closest('[data-name]');
+      if (!b) return;
+      $('#in-name').value = b.dataset.name;
+      syncModeToName();
+      (login.mode === 'login' ? $('#in-pass') : $('#in-email')).focus();
+    });
+    window.addEventListener('resize', placeCloud);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeCloud);
+    loadCloud();
+    resumeSession();
+  }
+
+  async function resumeSession() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem(SESSION)); } catch (e) { /* ignore */ }
+    if (!s || !s.key || !s.refresh) return;
+    try {
+      const a = await Store.restore(s.refresh);
+      await enterApp(s.key, a.email, true);
+    } catch (e) {
+      localStorage.removeItem(SESSION);
+    }
+  }
+
+  async function submitLogin() {
+    const err = $('#login-err');
+    err.textContent = '';
+    const name = $('#in-name').value.trim().slice(0, 20);
     const key = Store.slug(name);
-    if (!key) { $('#login-err').textContent = 'Enter a username (letters or numbers).'; return; }
-    $('#login-err').textContent = '';
-    state.user = { name, key };
-    state.group = Store.slug(crew) || cfg.defaultGroup || 'home';
-    localStorage.setItem(SESSION, JSON.stringify({ name, crew: state.group }));
+    const pass = $('#in-pass').value;
+    if (!key) { err.textContent = 'Enter a username (letters or numbers).'; return; }
+    const btn = $('#login-submit');
+    btn.disabled = true;
+    try {
+      if (login.mode === 'login') {
+        const email = await Store.loginEmail(key);
+        if (!email) { err.textContent = 'No account with that username. Use CREATE ACCOUNT to make one.'; return; }
+        await Store.signIn(email, pass);
+        await enterApp(key, email, false, name);
+      } else {
+        const email = $('#in-email').value.trim();
+        if (pass !== $('#in-pass2').value) { err.textContent = 'Passwords do not match.'; return; }
+        const hit = login.names.find((n) => n.key === key);
+        if (hit && hit.claimed) { err.textContent = 'That username is taken. Log in instead.'; return; }
+        await Store.register({ key, name: hit ? hit.name : name, email, password: pass });
+        await enterApp(key, email, false, name);
+        toast(login.mode === 'claim' ? 'Account set up. Welcome back!' : 'Account created for ' + name);
+      }
+    } catch (e) {
+      err.textContent = errText(e);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function forgotPassword() {
+    const err = $('#login-err');
+    const key = Store.slug($('#in-name').value);
+    if (!key) { err.textContent = 'Type your username first.'; return; }
+    try {
+      const email = await Store.loginEmail(key);
+      if (!email) { err.textContent = 'No account with that username.'; return; }
+      await Store.sendReset(email);
+      err.textContent = '';
+      toast('Password reset email sent to ' + email.replace(/^(.).*(@.*)$/, '$1***$2'));
+    } catch (e) {
+      err.textContent = errText(e);
+    }
+  }
+
+  /** Common post-auth path: load data, verify ownership, repair lookup records, show the app. */
+  async function enterApp(key, email, silent, typedName) {
+    const { db, online } = await Store.loadAll();
+    const me = db.users[key];
+    const uid = Store.session && Store.session.uid;
+    if (!me || me.uid !== uid) {
+      Store.signOut();
+      localStorage.removeItem(SESSION);
+      throw Object.assign(new Error('NOT_OWNER'), { code: 'NOT_OWNER' });
+    }
+    state.db = db;
+    state.online = online;
+    state.user = { name: me.name || typedName || key, key, uid, email, role: me.role };
+    state.crew = localStorage.getItem(CREW_KEY + key) || ALL;
+    if (state.crew !== ALL && !myCrews().includes(state.crew)) state.crew = ALL;
+    localStorage.setItem(SESSION, JSON.stringify({ key, refresh: Store.session.refreshToken }));
+    try { await Store.ensureProfile({ key, name: state.user.name, email }); } catch (e) { /* repaired next login */ }
     $('#login-screen').hidden = true;
     $('#app').hidden = false;
-    $('#who').textContent = name;
-    $('#crew-tag').textContent = Store.remote ? '@' + state.group : '';
-    await refresh();
-    if (!state.db.users[key]) {
-      state.db.users[key] = { name, entries: {} }; // creates the new save folder
-      Store.saveLocal(state.group, state.db);
-      Store.putUserName(state.group, key, name);
-      renderAll();
-      if (!silent) toast('New save file created for ' + name);
-    }
+    renderAll();
     startPolling();
   }
 
   function logout() {
     localStorage.removeItem(SESSION);
+    Store.signOut();
     location.reload();
   }
 
   /* ---------- sync ---------- */
   async function refresh() {
-    const { db, online } = await Store.load(state.group);
+    if (!state.user) return;
+    const { db, online } = await Store.loadAll();
     state.db = db;
     state.online = online;
+    const me = db.users[state.user.key];
+    if (me) { state.user.role = me.role; state.user.name = me.name || state.user.name; }
+    if (state.crew !== ALL && !myCrews().includes(state.crew)) state.crew = ALL;
     renderAll();
   }
 
   let pollTimer;
   function startPolling() {
     clearInterval(pollTimer);
-    if (!Store.remote) return;
-    pollTimer = setInterval(() => { if (!document.hidden) refresh(); }, (cfg.refreshSeconds || 30) * 1000);
+    pollTimer = setInterval(() => { if (!document.hidden) refresh().catch(() => {}); }, (cfg.refreshSeconds || 30) * 1000);
   }
 
   function renderSync() {
     const el = $('#sync');
-    if (!Store.remote) { el.textContent = 'LOCAL ONLY'; el.className = 'pill'; el.title = 'Scores are saved in this browser. See README to share with friends.'; }
-    else if (state.online) { el.textContent = 'SHARED ONLINE'; el.className = 'pill ok'; el.title = 'Synced with the shared database'; }
-    else { el.textContent = 'OFFLINE'; el.className = 'pill bad'; el.title = 'Cannot reach the database; showing the local copy'; }
+    if (state.online) { el.textContent = 'SHARED ONLINE'; el.className = 'pill ok'; el.title = 'Synced with the shared database'; }
+    else { el.textContent = 'OFFLINE'; el.className = 'pill bad'; el.title = 'Cannot reach the database; showing the last copy'; }
+  }
+
+  function renderUserBar() {
+    $('#who').textContent = state.user.name;
+    const rt = $('#role-tag');
+    rt.textContent = isAdmin() ? 'ADMIN' : '';
+    rt.className = isAdmin() ? 'admin' : '';
+    $('#crew-tag').textContent = '@' + state.crew;
   }
 
   /* ---------- render: today ---------- */
   function renderAll() {
     renderSync();
+    renderUserBar();
     $('#date-input').value = state.date;
     $('#log-date').textContent = prettyDate(state.date) + (state.date === today() ? ' (TODAY)' : '');
     $('#log-date').classList.toggle('warn', state.date !== today());
@@ -300,8 +497,7 @@
   async function saveParsed() {
     if (!state.parsed.length || !state.user) return;
     const { key, name } = state.user;
-    const user = (state.db.users[key] = state.db.users[key] || { name, entries: {} });
-    user.name = name;
+    const user = (state.db.users[key] = state.db.users[key] || { name, entries: {}, crews: {}, role: state.user.role });
     user.entries = user.entries || {};
     const jobs = [];
     for (const r of state.parsed) {
@@ -311,14 +507,14 @@
       }));
       const ek = `${state.date}_${r.game}`;
       user.entries[ek] = entry;
-      jobs.push(Store.putEntry(state.group, key, ek, entry));
+      jobs.push(Store.putEntry(key, ek, entry));
     }
-    Store.saveLocal(state.group, state.db);
+    Store.saveLocal(state.db);
     const n = state.parsed.length;
     $('#paste').value = '';
     renderAll();
     const results = await Promise.all(jobs);
-    if (Store.remote && results.some((ok) => !ok)) { state.online = false; renderSync(); toast(`Saved ${n} locally. Could not reach shared database.`); }
+    if (results.some((ok) => !ok)) { state.online = false; renderSync(); toast(`Saved ${n} locally. Could not reach shared database.`); }
     else toast(`Saved ${n} score${n > 1 ? 's' : ''}!`);
   }
 
@@ -326,10 +522,10 @@
     if (!confirm('Delete this score?')) return;
     const u = state.db.users[state.user.key];
     if (u && u.entries) delete u.entries[ek];
-    Store.saveLocal(state.group, state.db);
+    Store.saveLocal(state.db);
     renderAll();
-    await Store.removeEntry(state.group, state.user.key, ek);
-    toast('Score deleted');
+    const done = await Store.removeEntry(state.user.key, ek);
+    toast(done ? 'Score deleted' : 'Deleted locally. Could not reach shared database.');
   }
 
   /* ---------- tabs ---------- */
@@ -441,12 +637,12 @@
   function tabData(body) {
     body.innerHTML =
       `<div class="data">
-        <p>Mode: <b>${Store.remote ? 'SHARED (' + esc(state.group) + ')' : 'LOCAL ONLY'}</b>. ${Store.remote ? '' : 'Scores live in this browser. Add a Firebase URL in <code>js/config.js</code> to share with friends.'}</p>
+        <p>Signed in as <b>${esc(state.user.name)}</b>. Viewing crew <b>@${esc(state.crew)}</b>${state.crew === ALL ? ' (everyone)' : ''}.</p>
         <div class="btnrow">
           <button class="btn small" id="d-export">EXPORT JSON</button>
           <button class="btn small" id="d-import">IMPORT JSON</button>
           <button class="btn small ghost" id="d-refresh">REFRESH</button>
-          <button class="btn small danger" id="d-wipe">DELETE MY SAVE</button>
+          <button class="btn small danger" id="d-wipe">DELETE MY SCORES</button>
         </div>
         <input type="file" id="d-file" accept="application/json" hidden>
       </div>`;
@@ -458,32 +654,42 @@
   }
 
   function exportData() {
-    const blob = new Blob([JSON.stringify({ app: 'pixel-rank', group: state.group, exported: new Date().toISOString(), users: state.db.users }, null, 2)], { type: 'application/json' });
+    const vis = visibleUsers();
+    const users = {};
+    for (const [uk, u] of Object.entries(vis)) users[uk] = { name: u.name, entries: u.entries || {} };
+    const blob = new Blob([JSON.stringify({ app: 'pixel-rank', crew: state.crew, exported: new Date().toISOString(), users }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `rank2-day-${state.group}-${today()}.json`;
+    a.download = `rank2-day-${state.crew}-${today()}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
+  /** Merges newer entries from a file. You can import your own scores; admins can import anyone's. */
   async function importData(ev) {
     const f = ev.target.files[0];
     if (!f) return;
     try {
       const data = JSON.parse(await f.text());
       const incoming = data.users || {};
-      let added = 0;
-      for (const [uk, u] of Object.entries(incoming)) {
-        const mine = (state.db.users[uk] = state.db.users[uk] || { name: u.name || uk, entries: {} });
-        mine.entries = mine.entries || {};
-        for (const [ek, e] of Object.entries(u.entries || {})) {
-          if (!mine.entries[ek] || (e.ts || 0) > (mine.entries[ek].ts || 0)) { mine.entries[ek] = e; added++; }
+      let added = 0, skipped = 0;
+      for (const [rawKey, u] of Object.entries(incoming)) {
+        const uk = Store.slug(rawKey);
+        const target = state.db.users[uk];
+        if (!target || (uk !== state.user.key && !isAdmin())) { skipped++; continue; }
+        const fresh = {};
+        for (const [ek, e] of Object.entries((u && u.entries) || {})) {
+          const cur = (target.entries || {})[ek];
+          if (!cur || (e.ts || 0) > (cur.ts || 0)) { fresh[ek] = e; added++; }
+        }
+        if (Object.keys(fresh).length) {
+          target.entries = Object.assign(target.entries || {}, fresh);
+          await Store.mergeEntries(uk, fresh);
         }
       }
-      Store.saveLocal(state.group, state.db);
-      await Store.replaceUsers(state.group, state.db.users);
+      Store.saveLocal(state.db);
       renderAll();
-      toast(`Imported ${added} scores`);
+      toast(`Imported ${added} scores` + (skipped ? ` (${skipped} account${skipped > 1 ? 's' : ''} skipped)` : ''));
     } catch (e) {
       toast('Import failed: not a valid rank2.day file');
     }
@@ -491,14 +697,160 @@
   }
 
   async function wipeMine() {
-    if (!confirm('Delete ALL of your scores for this crew? This cannot be undone.')) return;
+    if (!confirm('Delete ALL of your scores? Your account stays. This cannot be undone.')) return;
     const key = state.user.key;
-    state.db.users[key] = { name: state.user.name, entries: {} };
-    Store.saveLocal(state.group, state.db);
-    await Store.removeUser(state.group, key);
-    await Store.putUserName(state.group, key, state.user.name);
+    if (state.db.users[key]) state.db.users[key].entries = {};
+    Store.saveLocal(state.db);
     renderAll();
-    toast('Your save was cleared');
+    const done = await Store.clearEntries(key);
+    toast(done ? 'Your scores were cleared' : 'Cleared locally. Could not reach shared database.');
+  }
+
+  /* ---------- modal: crew + account ---------- */
+  function openModal(title, render) {
+    $('#modal-title').textContent = title;
+    $('#modal').hidden = false;
+    render($('#modal-body'));
+  }
+  function closeModal() { $('#modal').hidden = true; $('#modal-body').innerHTML = ''; }
+
+  function setCrew(code) {
+    state.crew = code;
+    localStorage.setItem(CREW_KEY + state.user.key, code);
+    renderAll();
+  }
+
+  function crewMembers(code) {
+    return Object.values(state.db.users).filter((u) => u.crews && u.crews[code]).length;
+  }
+
+  function openCrew() {
+    openModal('CREW CODE', function draw(body) {
+      const mine = myCrews().filter((c) => c !== ALL);
+      const item = (code, label, removable) =>
+        `<li class="${state.crew === code ? 'on' : ''}"><span class="tick">${state.crew === code ? '▸' : ''}</span><button type="button" class="pick" data-pick="${esc(code)}">@${esc(label)}</button>${removable ? `<button type="button" class="x" title="Remove this code" data-rm="${esc(code)}">✕</button>` : ''}</li>`;
+      body.innerHTML =
+        `<p class="hint" style="margin-top:0">Pick a crew to filter whose scores you see. Anyone who saves the same code shows up in it. <b>@${esc(ALL)}</b> shows everyone.</p>` +
+        '<ul class="crew-list">' +
+        item(ALL, ALL + ' (everyone)', false) +
+        mine.map((c) => item(c, `${c} (${crewMembers(c)})`, true)).join('') +
+        '</ul>' +
+        '<label class="label" for="crew-add">ADD A CREW CODE</label>' +
+        '<div class="row"><input id="crew-add" type="text" maxlength="32" placeholder="e.g. work-friends" autocomplete="off"><button type="button" class="btn small" id="crew-add-btn">ADD</button></div>' +
+        '<p id="crew-msg" class="err" role="alert"></p>';
+
+      body.onclick = async (ev) => {
+        const pick = ev.target.closest('[data-pick]');
+        if (pick) { setCrew(pick.dataset.pick); draw(body); return; }
+        const rm = ev.target.closest('[data-rm]');
+        if (rm) {
+          const code = rm.dataset.rm;
+          const me = state.db.users[state.user.key];
+          if (me && me.crews) delete me.crews[code];
+          if (state.crew === code) setCrew(ALL);
+          Store.saveLocal(state.db);
+          renderAll();
+          draw(body);
+          if (!(await Store.removeCrew(state.user.key, code))) toast('Removed locally. Could not reach shared database.');
+          return;
+        }
+        if (ev.target.closest('#crew-add-btn')) add();
+      };
+      $('#crew-add').onkeydown = (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); add(); } };
+
+      async function add() {
+        const code = Store.slug($('#crew-add').value);
+        if (!code) { $('#crew-msg').textContent = 'Use letters or numbers.'; return; }
+        if (code === ALL) { setCrew(ALL); draw(body); return; }
+        const me = state.db.users[state.user.key];
+        if (!me) return;
+        me.crews = me.crews || {};
+        me.crews[code] = true;
+        setCrew(code);
+        Store.saveLocal(state.db);
+        draw(body);
+        if (!(await Store.addCrew(state.user.key, code))) toast('Added locally. Could not reach shared database.');
+        else toast('Crew @' + code + ' saved');
+      }
+    });
+  }
+
+  function openAccount() {
+    openModal('ACCOUNT', function draw(body) {
+      const u = state.user;
+      const me = state.db.users[u.key] || {};
+      const crews = [ALL].concat(myCrews().filter((c) => c !== ALL));
+      const adminBlock = isAdmin()
+        ? '<h3>ADMIN</h3>' +
+          '<table class="admin-users"><tbody>' +
+          Object.entries(state.db.users).sort((a, b) => (a[1].name || a[0]).localeCompare(b[1].name || b[0])).map(([uk, x]) =>
+            `<tr><td>${esc(x.name || uk)}${x.uid ? '' : ' <small class="hint">(unclaimed)</small>'}</td><td><select data-role="${esc(uk)}" ${uk === u.key ? 'disabled title="You cannot change your own role"' : ''}><option value="player"${x.role !== 'admin' ? ' selected' : ''}>player</option><option value="admin"${x.role === 'admin' ? ' selected' : ''}>admin</option></select></td></tr>`
+          ).join('') +
+          '</tbody></table>' +
+          '<div class="btnrow"><button type="button" class="btn small ghost" id="adm-migrate">IMPORT LEGACY DATA</button></div>' +
+          '<p class="hint">Legacy import copies the old crew &gt; name &gt; scores data into accounts. Old crews become crew codes. Names show on the login screen until their owners set up an email and password.</p>'
+        : '';
+      body.innerHTML =
+        `<div class="kv"><span>USERNAME</span><span>${esc(u.name)}</span></div>` +
+        `<div class="kv"><span>ROLE</span><span>${esc(me.role || u.role)}</span></div>` +
+        `<div class="kv"><span>EMAIL</span><span>${esc(u.email || '-')}</span></div>` +
+        `<div class="kv"><span>CREWS</span><span>${crews.map((c) => '@' + esc(c)).join(' ')}</span></div>` +
+        '<h3>EDIT</h3>' +
+        '<form id="acct-form" autocomplete="off">' +
+        '<label class="label" for="ac-email">NEW EMAIL (optional)</label><input id="ac-email" type="email" placeholder="leave blank to keep">' +
+        '<label class="label" for="ac-pass">NEW PASSWORD (optional)</label><input id="ac-pass" type="password" minlength="6" autocomplete="new-password" placeholder="leave blank to keep">' +
+        '<label class="label" for="ac-pass2">CONFIRM NEW PASSWORD</label><input id="ac-pass2" type="password" minlength="6" autocomplete="new-password">' +
+        '<label class="label" for="ac-cur">CURRENT PASSWORD (required to save)</label><input id="ac-cur" type="password" autocomplete="current-password" required>' +
+        '<div class="btnrow"><button class="btn small" type="submit" id="ac-save">SAVE CHANGES</button></div>' +
+        '<p id="ac-msg" class="err" role="alert"></p></form>' +
+        adminBlock;
+
+      $('#acct-form').onsubmit = async (ev) => {
+        ev.preventDefault();
+        const msg = $('#ac-msg');
+        msg.className = 'err';
+        const email = $('#ac-email').value.trim();
+        const pass = $('#ac-pass').value;
+        if (!email && !pass) { msg.textContent = 'Enter a new email or password to change.'; return; }
+        if (pass && pass !== $('#ac-pass2').value) { msg.textContent = 'New passwords do not match.'; return; }
+        const btn = $('#ac-save');
+        btn.disabled = true;
+        try {
+          await Store.updateAccount({ currentPassword: $('#ac-cur').value, email: email || undefined, password: pass || undefined });
+          if (email) { await Store.setLoginEmail(u.key, email); u.email = email; }
+          localStorage.setItem(SESSION, JSON.stringify({ key: u.key, refresh: Store.session.refreshToken }));
+          toast('Account updated');
+          draw(body);
+        } catch (e) {
+          msg.textContent = errText(e);
+        } finally {
+          btn.disabled = false;
+        }
+      };
+
+      body.onchange = async (ev) => {
+        const sel = ev.target.closest('[data-role]');
+        if (!sel) return;
+        const uk = sel.dataset.role;
+        const done = await Store.setRole(uk, sel.value);
+        if (done) { state.db.users[uk].role = sel.value; Store.saveLocal(state.db); toast(`${state.db.users[uk].name || uk} is now ${sel.value}`); }
+        else { toast('Could not change role.'); draw(body); }
+      };
+      const mig = $('#adm-migrate');
+      if (mig) mig.onclick = async () => {
+        if (!confirm('Import legacy crew data into accounts? Existing scores are kept (newest wins).')) return;
+        mig.disabled = true;
+        try {
+          const r = await Store.migrateLegacy();
+          await refresh();
+          toast(`Imported ${r.users} accounts, ${r.entries} scores`);
+          draw(body);
+        } catch (e) {
+          toast('Import failed: ' + errText(e));
+          mig.disabled = false;
+        }
+      };
+    });
   }
 
   /* ---------- games drawer ---------- */
@@ -528,11 +880,15 @@
     $('#btn-today').onclick = () => setDate(today());
     $('#date-input').onchange = (e) => setDate(e.target.value);
     $('#btn-logout').onclick = logout;
+    $('#btn-crew').onclick = openCrew;
+    $('#btn-account').onclick = openAccount;
+    $('#modal-close').onclick = closeModal;
+    $('#modal').addEventListener('mousedown', (e) => { if (e.target.id === 'modal') closeModal(); });
     $('#btn-games').onclick = () => toggleDrawer(true);
     $('#drawer-close').onclick = () => toggleDrawer(false);
     $('#backdrop').onclick = () => toggleDrawer(false);
     $('#link-filter').oninput = (e) => renderLinks(e.target.value);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleDrawer(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { toggleDrawer(false); closeModal(); } });
     $('#btn-crt').onclick = () => { document.body.classList.toggle('nocrt'); localStorage.setItem('pixelrank.nocrt', document.body.classList.contains('nocrt') ? '1' : ''); };
     if (localStorage.getItem('pixelrank.nocrt')) document.body.classList.add('nocrt');
 
@@ -551,7 +907,7 @@
       const go = e.target.closest('[data-goto]');
       if (go) { state.tab = 'today'; setDate(go.dataset.goto); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden && state.user && Store.remote) refresh(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && state.user) refresh().catch(() => {}); });
 
     renderLinks('');
     initLogin();
