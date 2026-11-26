@@ -251,6 +251,7 @@ input[type=date] { width: auto; padding: 4px 8px; }
 .gcard .x-pad { width: 14px; }
 .gcard h3 a { color: var(--text); text-decoration: none; }
 .gcard h3 a:hover { color: var(--blue); text-decoration: underline; }
+.gcard li.none .pl { color: var(--dim); }
 .me { color: var(--green); }
 
 /* ---------- paste preview ---------- */
