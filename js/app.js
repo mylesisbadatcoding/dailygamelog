@@ -446,20 +446,21 @@
         `<p class="hint">${POINTS.map((p, i) => MEDALS[i] + ' ' + p).join(' · ')} pts per game. Needs 2+ players on a game to score.</p>`;
     }
 
-    // per-game cards
-    const g = $('#today-games');
-    const ids = Object.keys(day.byGame).sort(
-    (a, b) => day.byGame[b].length - day.byGame[a].length || meta(a).name.localeCompare(meta(b).name)
-    );
-    if (!ids.length) { g.innerHTML = ''; return; }
-    g.innerHTML = ids.map((id) => {
-      const list = day.byGame[id];
-      const m = meta(id, list[0].e);
+// per-game cards: every known game, plus any unknown ones that were played
+const g = $('#today-games');
+const ids = [...new Set([...Object.keys(Games.GAMES), ...Object.keys(day.byGame)])].sort(
+  (a, b) =>
+    (day.byGame[b] || []).length - (day.byGame[a] || []).length ||
+    meta(a).name.localeCompare(meta(b).name)
+);
+g.innerHTML = ids.map((id) => {
+  const list = day.byGame[id] || [];
+  const m = meta(id, list[0] && list[0].e);
       const puzzles = [...new Set(list.map((r) => r.e.puzzle).filter((p) => p != null))];
-      const rows = list.map((r) => {
+      const rows = list.length ? list.map((r) => {
         const mine = state.user && r.uk === state.user.key;
         return `<li><span class="rk">${MEDALS[r.rank - 1] || r.rank}</span><span class="pl">${playerCell(r.uk, r.name)}</span><span class="sc${r.e.fail ? ' fail' : ''}">${esc(r.e.display)}</span><span class="pt">${list.length > 1 ? '+' + r.pts : ''}</span>${mine ? `<button class="x" title="Delete my score" data-del="${esc(r.ek)}">✕</button>` : '<span class="x-pad"></span>'}</li>`;
-      }).join('');
+      }).join('') : '<li class="none"><span class="pl">No scores yet</span></li>';
       return `<article class="gcard"><header><span class="ic">${m.icon}</span><h3>${m.url ? `<a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">${esc(m.name)}</a>` : esc(m.name)}</h3><span class="pz">${puzzles.length ? '#' + puzzles.join(', #') : ''}</span><span class="dir" title="${m.higher ? 'Higher score wins' : 'Lower score wins'}">${m.higher ? '▲ HIGH' : '▼ LOW'}</span></header><ul>${rows}</ul></article>`;
     }).join('');
   }
